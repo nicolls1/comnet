@@ -10,17 +10,17 @@
 #include <chrono>
 #include "network.h"
 
-#define BUFSIZE 512
-#define PORT 8080
+#define BUFSIZE 1024
 #define EOL "\r\n"
 #define EOL_SIZE 2
 
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    if((argc != 2) || (strlen(argv[1]) > 510)) {
-        cout << "invalid arg" << endl;
-        return -1;
+    int port;
+    if((argc != 4) || ((port = atoi(argv[2])) <= 1000 || (strlen(argv[1]) > 1000))) {
+        cout << "Invalid args expect a port greater than 1000 and file name less than 1000 bytes" << endl;
+        exit(EXIT_FAILURE);
     }
 
     int socket_fd;
@@ -32,11 +32,10 @@ int main(int argc, char* argv[]) {
 
     struct sockaddr_in remoteSocketInfo;
     struct hostent* hPtr;
-    const char* remoteHost = "localhost"; //"mattnicolls.freeserver.me";
 
     bzero(&remoteSocketInfo, sizeof(sockaddr_in));
 
-    if((hPtr = gethostbyname(remoteHost)) == NULL) {
+    if((hPtr = gethostbyname(argv[1])) == NULL) {
         close(socket_fd);
         cerr << "system DNS name resolution not configured properly." << endl;
         cerr << "Error Number: " << ECONNREFUSED << endl;
@@ -47,7 +46,7 @@ int main(int argc, char* argv[]) {
 
     memcpy((char*) &remoteSocketInfo.sin_addr, hPtr->h_addr, hPtr->h_length);
     remoteSocketInfo.sin_family = AF_INET;
-    remoteSocketInfo.sin_port = htons((u_short)PORT);
+    remoteSocketInfo.sin_port = htons((u_short)port);
 
     if(connect(socket_fd, (struct sockaddr *)&remoteSocketInfo, sizeof(sockaddr_in)) < 0) {
         cout << "unable to connect" << endl;
@@ -60,10 +59,9 @@ int main(int argc, char* argv[]) {
     char buf[BUFSIZE] = "GET ";
     unsigned long time_1, time_2;
     
-    strncat(buf, argv[1], strlen(argv[1]));
+    strncat(buf, argv[3], strlen(argv[3]));
     strncat(buf, EOL, EOL_SIZE);
 
-    //send(socket_fd, buf, strlen(buf)+1, 0);
     send_string(socket_fd, buf);
 
     time_1 = chrono::system_clock::now().time_since_epoch() /
@@ -80,8 +78,7 @@ int main(int argc, char* argv[]) {
         }
         ++count;
 
-        //cout << "Bytes: " << bytes_read << endl;
-        cout << /*"Received: " <<*/ buf << endl;
+        cout << buf << endl;
 
         if(count == 1) {
             response_code = atoi(strchr(buf,' ')+1);
@@ -105,24 +102,24 @@ int main(int argc, char* argv[]) {
         exit(EXIT_FAILURE);
     }
 
-    //if((read_length = recv(socket_fd, content_ptr, content_length, 0/*MSG_WAITALL*/)) < 0) {
     if((read_length = recv_stream(socket_fd, content_ptr, content_length)) < 0) {
         cout << "failed to receive file" << endl;
         close(socket_fd);
         exit(EXIT_FAILURE);
     }
 
-    //cout << "Read File Bytes: " << read_length << endl;
-    cout << /*"Read File Content: " <<*/ content_ptr << endl;
+    cout << content_ptr << endl;
 
     time_2 = chrono::system_clock::now().time_since_epoch() /
              chrono::milliseconds(1);
 
     cout << "Seconds since send=" << (double(time_2 - time_1))/1000 << endl;
-    
-    FILE* store_file = fopen("last_rec.txt", "w");
+
+    /* 
+    FILE* store_file = fopen(argv[3], "w");
     fwrite(content_ptr, sizeof(char), read_length, store_file);
     fclose(store_file);
+    */
 
     close(socket_fd);
 
