@@ -374,7 +374,7 @@ bool SenderStateMachine::newAck(Packet recv) {
 
     ackedPosition_ = recv.ack_num;
     cout << "newAck: " << ackedPosition_ << endl;
-    if(message_->tellg() < ackedPosition_) {
+    if(message_->tellg() < ackedPosition_ && message_->tellg() > 0) {
       message_->seekg(ackedPosition_-1);
     }
     dupAckCount_ = 0;

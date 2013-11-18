@@ -58,8 +58,7 @@ int ReceiverStateMachine::openLossPatern(string file) {
     break;
   case 2:
     cout << "Specific loss with ";
-    while(pch != NULL) {
-      pch = strtok (NULL, " ");
+    while((pch = strtok (NULL, " ")) != NULL) {
       if(atoi(pch) > 0) {
         specificPackets_.push_back(atoi(pch));
       } else {
@@ -67,7 +66,7 @@ int ReceiverStateMachine::openLossPatern(string file) {
       }
       cout << pch << " ";
     }
-    cout << "being lost";
+    cout << "being lost" << endl;
     if(specificPackets_.size() == 0) {
       return -1;
     }
