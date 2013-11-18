@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
+#include <pthread.h>
 #include "network.h"
 
 #define BUFSIZE 512
@@ -85,9 +86,13 @@ int main(int argc, char* argv[]) {
     }
 
     cout << "Connection received!" << endl;
-    handle_connection(socketConnection, &theirAddr);
+    if(!fork()) {
+      close(socket_fd);
+      handle_connection(socketConnection, &theirAddr);
+      exit(0);
+    }
   }
-
+  close(socket_fd);
 }
 
 void handle_connection(int socket_fd, struct sockaddr_in* client_addr_ptr) {
