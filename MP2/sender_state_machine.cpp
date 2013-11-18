@@ -333,11 +333,19 @@ void SenderStateMachine::processTimeout() {
   cwnd_ = 1;
   cwndFile_ << getTime() << " " << cwnd_ * MMSBYTES << endl;
   dupAckCount_ = 0;
-  message_->seekg(ackedPosition_-1);
+  if(message_->tellg() == -1) {
+    delete message_;
+    message_ = new ifstream();
+    message_->open(fileName_, std::ifstream::in);
+    message_->seekg(ackedPosition_-1);
+  } else {
+    message_->seekg(ackedPosition_-1);
+  }
   //if(ackedPosition_ != 1) {
   filePosition_ = ackedPosition_-1;
   //}
   notAcked_=0;
+  state_ = SLOW_START;
 }
 
 bool SenderStateMachine::finalAck(Packet recv) {
