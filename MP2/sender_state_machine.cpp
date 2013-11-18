@@ -59,12 +59,12 @@ bool SenderStateMachine::transmit(string file_name) {
       //cout << "MessagePosition: " << message_->tellg() << endl;
       if(*message_) {
         if((bytes_sent = sendData(packet_data, MMSBYTES)) < 0) {
-          cout << "Error sending File" << endl;
+          cout << "Error sending File 1" << endl;
           return false;
         }
       } else {
         if((bytes_sent = sendData(packet_data, message_->gcount())) < 0) {
-          cout << "Error sending File" << endl;
+          cout << "Error sending File 2" << endl;
           return false;
         }
       }
@@ -172,12 +172,12 @@ bool SenderStateMachine::retransmitMissingSegment() {
   cout << "Retrans Data: " << packet_data << endl;
   if(*message_) {
     if((bytes_sent = sendData(packet_data, MMSBYTES)) < 0) {
-      cout << "Error sending File" << endl;
+      cout << "Error sending File 3" << endl;
       return false;
     }
   } else {
     if((bytes_sent = sendData(packet_data, message_->gcount())) < 0) {
-      cout << "Error sending File" << endl;
+      cout << "Error sending File 4" << endl;
       return false;
     }
   }
