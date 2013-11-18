@@ -64,8 +64,8 @@ bool SenderStateMachine::transmit(string file_name) {
         }
       } else {
         if((bytes_sent = sendData(packet_data, message_->gcount())) < 0) {
-          cout << "Error sending File 2" << endl;
-          return false;
+          //cout << "Error sending File 2" << endl;
+          //return false;
         }
       }
       filePosition_ += bytes_sent;
