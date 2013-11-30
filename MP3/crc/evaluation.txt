@@ -1,0 +1,18 @@
+Matt Nicolls
+nicolls1
+ECE 438
+
+MP3 Performance Evaluation
+
+Part (i):
+Generating the data manually took an average of 212 nanoseconds on average 
+while the table took only 9 nanoseconds. The table method is far faster yet 
+uses a large amount of memory to store all of the values. 
+
+Part (ii):
+For p = 10, 7448 out of 8192; 91% detects presence of errors
+For p = 20, 7206 out of 8192; 88% detects presence of errors
+For p = 30, 7153 out of 8192; 87% detects presence of errors
+We can see the amount of errors detected decreases as a bit is more probable
+to contain an error. This is because there are too many errors for a CRC length
+of three. The CRC needs to be longer to be able to detect more errors.
